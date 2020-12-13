@@ -29,5 +29,15 @@ exports.jwtPassport= passport.use(new jwtStrategy(opts,(jwt_payload,done)=>
     );
 }) );
 
-
+exports.verifyAdmin = (req,err,next)=>{
+          if(req.user.admin)
+          {
+              next();
+          }
+          else {
+            err = new Error('You are not authorised to perform this operation');
+            err.status = 404;
+            return next(err);
+          }
+}
 exports.verifyUser = passport.authenticate('jwt', {session: false});
