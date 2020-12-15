@@ -1,5 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
+
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -12,11 +13,19 @@ var authenticate = require('./authenticate');
 const Dishes = require('./models/dishes');
 
 var app = express();
+app.all('*',(req,res,next)=>{
+  if(req.secure)
+  return next();
+  else{
+    res.redirect(307,'https://'+req.hostname+':'+app.get('secPort')+req.url);
+  }
+  });
 const url = config.mongoUrl;
 var dishRouter = require('./routes/dishRouter');
 var promoRouter = require('./routes/promoRouter');
 var leaderRouter = require('./routes/leaderRouter');
 var indexRouter = require('./routes/index');
+const uploadRouter = require('./routes/uploadRouter');
 var usersRouter = require('./routes/users');
 const connect = mongoose.connect(url);
 
@@ -42,7 +51,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/dishes',dishRouter);
 app.use('/leaders',leaderRouter);
 app.use('/promotions',promoRouter)
-
+app.use('/imageUpload',uploadRouter);
 
 
 
