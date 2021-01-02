@@ -8,10 +8,10 @@ router.use(bodyParser.json());
 /* GET users listing. */
 router.get('/',authenticate.verifyUser, authenticate.verifyAdmin,function(req, res, next) {
   User.find({})
-  .then((dishes) => {
+  .then((companies) => {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
-    res.json(dishes);
+    res.json(companies);
 }, (err) => next(err))
 .catch((err) => next(err));
 });
@@ -53,6 +53,15 @@ router.post('/login', passport.authenticate('local'), (req, res) => {
   
   res.json({success: true, token: token, status: 'You are successfully logged in!'});
 });
+router.get('/facebook/token',passport.authenticate('facebook-token'),(req,res)=>{
+  if(req.user){
+    var token = authenticate . getToken({_id: req.user._id});
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    
+    res.json({success: true, token: token, status: 'You are successfully logged in!'});
+  }
+})
 router.get('/logout', (req, res) => {
   if (req.session) {
     req.session.destroy();

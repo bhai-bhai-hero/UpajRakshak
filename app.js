@@ -10,23 +10,17 @@ const mongoose= require('mongoose');
 var passport = require('passport');
 var config = require('./config');
 var authenticate = require('./authenticate');
-const Dishes = require('./models/dishes');
+const companies = require('./models/companies');
 
 var app = express();
-app.all('*',(req,res,next)=>{
-  if(req.secure)
-  return next();
-  else{
-    res.redirect(307,'https://'+req.hostname+':'+app.get('secPort')+req.url);
-  }
-  });
+
 const url = config.mongoUrl;
-var dishRouter = require('./routes/dishRouter');
-var promoRouter = require('./routes/promoRouter');
-var leaderRouter = require('./routes/leaderRouter');
+var companyRouter = require('./routes/companyRouter');
+
 var indexRouter = require('./routes/index');
 const uploadRouter = require('./routes/uploadRouter');
 var usersRouter = require('./routes/users');
+var FavouriteRouter = require('./routes/FavouriteRouter');
 const connect = mongoose.connect(url);
 
 connect.then((db)=>{
@@ -48,11 +42,10 @@ app.use('/users',usersRouter);
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-app.use('/dishes',dishRouter);
-app.use('/leaders',leaderRouter);
-app.use('/promotions',promoRouter)
-app.use('/imageUpload',uploadRouter);
+app.use('/companies',companyRouter);
 
+app.use('/imageUpload',uploadRouter);
+app.use('/favourites',FavouriteRouter);
 
 
 // catch 404 and forward to error handler
