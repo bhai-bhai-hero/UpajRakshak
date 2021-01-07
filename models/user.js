@@ -10,6 +10,24 @@ var User = new  Schema({
           type: String,
           default : ""
       },
+      phoneno:{
+          type: Number
+
+      },
+      email:{
+        type: String,
+        default : ""
+      },
+      state:{
+        type: String
+      },
+      district:{
+        type: String
+      },
+      block:{
+        type: String
+      },
+
       facebookId: String,
     admin:{
         type: Boolean,

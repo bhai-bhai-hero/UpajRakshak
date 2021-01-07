@@ -20,7 +20,7 @@ var companyRouter = require('./routes/companyRouter');
 var indexRouter = require('./routes/index');
 const uploadRouter = require('./routes/uploadRouter');
 var usersRouter = require('./routes/users');
-var FavouriteRouter = require('./routes/FavouriteRouter');
+var SelectedRouter = require('./routes/SelectedRouter');
 const connect = mongoose.connect(url);
 
 connect.then((db)=>{
@@ -45,7 +45,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/companies',companyRouter);
 
 app.use('/imageUpload',uploadRouter);
-app.use('/favourites',FavouriteRouter);
+app.use('/Selecteds',SelectedRouter);
 
 
 // catch 404 and forward to error handler

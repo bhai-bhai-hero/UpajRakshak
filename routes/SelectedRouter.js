@@ -3,32 +3,31 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const authenticate = require('../authenticate');
 const cors = require('./cors');
-const Favourites = require('../models/Favourites');
+const Selecteds = require('../models/Selecteds');
 
-const favouriteRouter = express.Router();
+const SelectedRouter = express.Router();
 
-favouriteRouter.use(bodyParser.json());
+SelectedRouter.use(bodyParser.json());
 
-favouriteRouter.route('/')
+SelectedRouter.route('/')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.cors, authenticate.verifyUser, (req, res, next) => {
-    Favourites.find({})
-        .populate('user')
+    Selecteds.find({})
         .populate('companies')
-        .then((favourites) => {
-            // extract favourites that match the req.user.id
-            if (favourites) {
-                user_favourites = favourites.filter(fav => fav.user._id.toString() === req.user.id.toString())[0];
-                if(!user_favourites) {
-                    var err = new Error('You have no favourites!');
+        .then((Selecteds) => {
+            // extract Selecteds that match the req.user.id
+            if (Selecteds) {
+                user_Selecteds = Selecteds.filter(select => select.user._id.toString() === req.user.id.toString())[0];
+                if(!user_Selecteds) {
+                    var err = new Error('You have no Selecteds!');
                     err.status = 404;
                     return next(err);
                 }
                 res.statusCode = 200;
                 res.setHeader("Content-Type", "application/json");
-                res.json(user_favourites);
+                res.json(user_Selecteds);
             } else {
-                var err = new Error('There are no favourites');
+                var err = new Error('There are no Selecteds');
                 err.status = 404;
                 return next(err);
             }
@@ -38,15 +37,15 @@ favouriteRouter.route('/')
 })
 .post(cors.corsWithOptions, authenticate.verifyUser, 
     (req, res, next) => {
-        Favourites.find({})
+        Selecteds.find({})
             .populate('user')
             .populate('companies')
-            .then((favourites) => {
+            .then((Selected) => {
                 var user;
-                if(favourites)
-                    user = favourites.filter(fav => fav.user._id.toString() === req.user.id.toString())[0];
+                if(Selected)
+                    user = Selected.filter(fav => fav.user._id.toString() === req.user.id.toString())[0];
                 if(!user) 
-                    user = new Favourites({user: req.user.id});
+                    user = new Selecteds({user: req.user.id});
                 for(let i of req.body){
                     if(user.companies.find((d_id) => {
                         if(d_id._id){
@@ -61,7 +60,7 @@ favouriteRouter.route('/')
                         res.statusCode = 201;
                         res.setHeader("Content-Type", "application/json");
                         res.json(userFavs);
-                        console.log("Favourites Created");
+                        console.log("Selecteds Created");
                     }, (err) => next(err))
                     .catch((err) => next(err));
                 
@@ -71,16 +70,16 @@ favouriteRouter.route('/')
 
 .put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
-    res.end('PUT operation is not supported on /favourites');
+    res.end('PUT operation is not supported on /Selecteds');
 })
 .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    Favourites.find({})
+    Selecteds.find({})
         .populate('user')
         .populate('companies')
-        .then((favourites) => {
+        .then((Selecteds) => {
             var favToRemove;
-            if (favourites) {
-                favToRemove = favourites.filter(fav => fav.user._id.toString() === req.user.id.toString())[0];
+            if (Selecteds) {
+                favToRemove = Selecteds.filter(fav => fav.user._id.toString() === req.user.id.toString())[0];
             } 
             if(favToRemove){
                 favToRemove.remove()
@@ -91,7 +90,7 @@ favouriteRouter.route('/')
                     }, (err) => next(err));
                 
             } else {
-                var err = new Error('You do not have any favourites');
+                var err = new Error('You do not have any Selecteds');
                 err.status = 404;
                 return next(err);
             }
@@ -99,15 +98,15 @@ favouriteRouter.route('/')
         .catch((err) => next(err));
 });
 
-favouriteRouter.route('/:companyId')
+SelectedRouter.route('/:companyId')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.cors, authenticate.verifyUser, (req, res, next) => {
-    Favourites.find({})
+    Selecteds.find({})
         .populate('user')
         .populate('companies')
-        .then((favourites) => {
-            if (favourites) {
-                const favs = favourites.filter(fav => fav.user._id.toString() === req.user.id.toString())[0];
+        .then((Selecteds) => {
+            if (Selecteds) {
+                const favs = Selecteds.filter(fav => fav.user._id.toString() === req.user.id.toString())[0];
                 const company = favs.companies.filter(company => company.id === req.params.companyId)[0];
                 if(company) {
                     res.statusCode = 200;
@@ -119,7 +118,7 @@ favouriteRouter.route('/:companyId')
                     return next(err);
                 }
             } else {
-                var err = new Error('You do not have any favourites');
+                var err = new Error('You do not have any Selecteds');
                 err.status = 404;
                 return next(err);
             }
@@ -128,15 +127,15 @@ favouriteRouter.route('/:companyId')
 })
 .post(cors.corsWithOptions, authenticate.verifyUser, 
     (req, res, next) => {
-        Favourites.find({})
+        Selecteds.find({})
             .populate('user')
             .populate('companies')
-            .then((favourites) => {
+            .then((Selecteds) => {
                 var user;
-                if(favourites)
-                    user = favourites.filter(fav => fav.user._id.toString() === req.user.id.toString())[0];
+                if(Selecteds)
+                    user = Selecteds.filter(fav => fav.user._id.toString() === req.user.id.toString())[0];
                 if(!user) 
-                    user = new Favourites({user: req.user.id});
+                    user = new Selecteds({user: req.user.id});
                 if(!user.companies.find((d_id) => {
                     if(d_id._id)
                         return d_id._id.toString() === req.params.companyId.toString();
@@ -148,7 +147,7 @@ favouriteRouter.route('/:companyId')
                         res.statusCode = 201;
                         res.setHeader("Content-Type", "application/json");
                         res.json(userFavs);
-                        console.log("Favourites Created");
+                        console.log("Selecteds Created");
                     }, (err) => next(err))
                     .catch((err) => next(err));
 
@@ -158,16 +157,16 @@ favouriteRouter.route('/:companyId')
 
 .put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
-    res.end('PUT operation is not supported on /favourites/:companyId');
+    res.end('PUT operation is not supported on /Selecteds/:companyId');
 })
 .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    Favourites.find({})
+    Selecteds.find({})
         .populate('user')
         .populate('companies')
-        .then((favourites) => {
+        .then((Selecteds) => {
             var user;
-            if(favourites)
-                user = favourites.filter(fav => fav.user._id.toString() === req.user.id.toString())[0];
+            if(Selecteds)
+                user = Selecteds.filter(fav => fav.user._id.toString() === req.user.id.toString())[0];
             if(user){
                 user.companies = user.companies.filter((companyid) => companyid._id.toString() !== req.params.companyId);
                 user.save()
@@ -178,7 +177,7 @@ favouriteRouter.route('/:companyId')
                     }, (err) => next(err));
                 
             } else {
-                var err = new Error('You do not have any favourites');
+                var err = new Error('You do not have any Selecteds');
                 err.status = 404;
                 return next(err);
             }
@@ -186,4 +185,4 @@ favouriteRouter.route('/:companyId')
         .catch((err) => next(err));
 });
 
-module.exports = favouriteRouter;
+module.exports = SelectedRouter;
